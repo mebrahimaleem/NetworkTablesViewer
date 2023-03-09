@@ -27,9 +27,4 @@ public class NetworkAbstraction{
 	public void close(){
 		netinst.close();
 	}
-
-	public void p(){
-		netinst.getTable("root").getEntry("node").setDouble(1);
-	}
-
 }

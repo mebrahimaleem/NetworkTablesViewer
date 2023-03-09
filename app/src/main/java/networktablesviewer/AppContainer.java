@@ -28,8 +28,4 @@ public class AppContainer{
 	public void displayWindow(){
 		hWindow.setVisible(true);
 	}
-
-	public void blockingLoop(){
-		while (true) netabs.p();
-	}
 }
