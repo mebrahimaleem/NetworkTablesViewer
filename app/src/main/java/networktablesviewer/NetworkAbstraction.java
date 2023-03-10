@@ -5,7 +5,7 @@ import java.util.*;
 
 public class NetworkAbstraction {
 	NetworkTableInstance netinst;
-	int internalState; //TODO: use internalState to track errors
+	int internalState; 
 	MultiSubscriber subs;
 	NetworkTableListenerPoller poll;
 
@@ -36,10 +36,12 @@ public class NetworkAbstraction {
 
 	public void connect(){
 		netinst.startDSClient();
+		internalState = 1;
 	}
 
 	public void connect(String host){
 		netinst.setServer(host, NetworkTableInstance.kDefaultPort4);
+		internalState = 1;
 	}
 
 	public boolean isConnected(){
@@ -50,6 +52,7 @@ public class NetworkAbstraction {
 		poll.close();
 		subs.close();
 		netinst.close();
+		internalState = 0;
 	}
 
 	public int getError(){
@@ -57,6 +60,13 @@ public class NetworkAbstraction {
 	}
 	
 	public ArrayList<TopicValue> getLatest(){
+		if (!isConnected()){
+			internalState = 2;
+			return new ArrayList<TopicValue>();
+		}
+
+		internalState = 0;
+
 		ArrayList<TopicValue> values = new ArrayList<TopicValue>();
 		NetworkTableEvent[] events = poll.readQueue();
 
@@ -68,6 +78,12 @@ public class NetworkAbstraction {
 	}
 
 	public ArrayList<TopicValue> updateExists(ArrayList<TopicValue> latest){
+		if (!isConnected()){
+			internalState = 2;
+			return latest;
+		}
+
+		internalState = 0;
 		TopicValue t;
 		for (int i = 0; i < latest.size(); i++){
 			t = latest.get(i);
