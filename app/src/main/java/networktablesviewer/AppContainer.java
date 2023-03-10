@@ -7,13 +7,17 @@ import java.util.Scanner;
 
 public class AppContainer{
 	JFrame hWindow; //Window Handle
+	RootTableSidebar sidebar;
+	WindowContentPane contentPane;
+	JSplitPane sidebarSplit;
+
 	NetworkAbstraction netabs = new NetworkAbstraction();
 
 	public AppContainer(){
 		//Create new window
 		hWindow = new JFrame("Network Tables Viewer");
 		hWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		hWindow.setSize(750,750);
+		hWindow.setBackground(Color.black);
 
 		hWindow.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e){
@@ -21,11 +25,20 @@ public class AppContainer{
 				netabs.close();
 			}
 		});
+		
+		sidebar = new RootTableSidebar(hWindow);
+		contentPane = new WindowContentPane(hWindow);
 
+		sidebarSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebar.getScrollPane(), contentPane.getScrollPane());
+		sidebarSplit.setDividerLocation(250);
+		sidebarSplit.setPreferredSize(new Dimension(750, 750));
+		
+		hWindow.getContentPane().add(sidebarSplit);
 		netabs.connect("127.0.0.1");
 	}
 
 	public void displayWindow(){
+		hWindow.pack();
 		hWindow.setVisible(true);
 	}
 }
