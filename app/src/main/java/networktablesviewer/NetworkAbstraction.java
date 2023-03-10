@@ -9,11 +9,25 @@ public class NetworkAbstraction {
 	MultiSubscriber subs;
 	NetworkTableListenerPoller poll;
 
+	
+	public class TopicValue{
+		public NetworkTableValue value;
+		public String name;
+		public boolean exists = true;
+
+		public TopicValue() {}
+
+		public TopicValue(NetworkTableValue val, String nm){
+			value = val;
+			name = nm;
+		}
+	}
+
 	public NetworkAbstraction(){
 		netinst = NetworkTableInstance.create();
 		netinst.startClient4("NTVC-lcl");
 
-		subs = new MultiSubscriber(netinst, new String[] {"/"});
+		subs = new MultiSubscriber(netinst, new String[] {"/"}); 
 		poll = new NetworkTableListenerPoller(netinst);
 		poll.addListener(subs, EnumSet.of(NetworkTableEvent.Kind.kValueAll));
 
@@ -41,22 +55,36 @@ public class NetworkAbstraction {
 	public int getError(){
 		return internalState;
 	}
-
-	public ArrayList<NetworkTableValue> getLatest(){
-		ArrayList<NetworkTableValue> values = new ArrayList<NetworkTableValue>();
+	
+	public ArrayList<TopicValue> getLatest(){
+		ArrayList<TopicValue> values = new ArrayList<TopicValue>();
 		NetworkTableEvent[] events = poll.readQueue();
 
 		for (NetworkTableEvent event : events){
-			values.add(event.valueData.value);
+			values.add(new TopicValue(event.valueData.value, event.valueData.getTopic().getName()));
 		}
 
 		return values;
 	}
 
-	public static ArrayList<NetworkTableValue> squashLatest(ArrayList<NetworkTableValue> current, ArrayList<NetworkTableValue> latest){
+	public ArrayList<TopicValue> updateExists(ArrayList<TopicValue> latest){
+		TopicValue t;
+		for (int i = 0; i < latest.size(); i++){
+			t = latest.get(i);
+			if (t.exists != netinst.getTopic(t.name).exists()){
+				t.exists = !t.exists;
+				latest.remove(i);
+				latest.add(i, t);
+			}
+		}
+		return latest;
+	}
+
+	public static ArrayList<TopicValue> squashLatest(ArrayList<TopicValue> current, ArrayList<TopicValue> latest){
+		current.addAll(latest);
 		for (int i = 0; i < current.size(); i++)
 			for (int j = 0; j < latest.size(); j++)
-				if (current.get(i).getTime() < latest.get(j).getTime()){
+				if (current.get(i).value.getTime() < latest.get(j).value.getTime()){
 					current.remove(i);
 					current.add(i, latest.get(j));
 					latest.remove(j);

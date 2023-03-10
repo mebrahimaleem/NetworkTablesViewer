@@ -3,11 +3,15 @@ package networktablesviewer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Scanner;
+import java.util.*;
+
+import edu.wpi.first.networktables.*;
 
 public class AppContainer{
 	JFrame hWindow; //Window Handle
 	NetworkAbstraction netabs = new NetworkAbstraction();
+
+	ArrayList<NetworkAbstraction.TopicValue> dtroot = new ArrayList<NetworkAbstraction.TopicValue>();
 
 	public AppContainer(){
 		//Create new window
@@ -17,8 +21,8 @@ public class AppContainer{
 
 		hWindow.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e){
-				System.out.println("Closing sockets...");
-				netabs.close();
+				System.out.println("Normal Termination");
+				dispose();
 			}
 		});
 
@@ -27,5 +31,17 @@ public class AppContainer{
 
 	public void displayWindow(){
 		hWindow.setVisible(true);
+	}
+
+	public void blockingLoop(){
+		while (true){
+			dtroot = NetworkAbstraction.squashLatest(dtroot, netabs.getLatest());
+			dtroot = netabs.updateExists(dtroot);
+		}
+	}
+
+	public void dispose(){
+		System.out.println("Closing sockets...");
+		netabs.close();
 	}
 }
