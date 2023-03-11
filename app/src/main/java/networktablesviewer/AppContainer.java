@@ -17,7 +17,6 @@ public class AppContainer{
 		//Create new window
 		hWindow = new JFrame("Network Tables Viewer");
 		hWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		hWindow.setBackground(Color.black);
 
 		hWindow.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e){
