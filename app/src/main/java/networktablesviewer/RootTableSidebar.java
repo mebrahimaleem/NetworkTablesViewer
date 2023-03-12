@@ -14,6 +14,7 @@ public class RootTableSidebar {
 	JLabel title = new JLabel("Topics");
 	SidebarList listModel = new SidebarList();
 	JList list;
+	ArrayList<String> filter = new ArrayList<String>();
 
 	public class SidebarList extends AbstractListModel{
 		ArrayList<TopicValue> topics = new ArrayList<TopicValue>();
@@ -118,8 +119,20 @@ public class RootTableSidebar {
 
 	public JScrollPane getScrollPane() {return scroll;}
 
+	private boolean checkFilter(String i){
+		for (String j : filter) if (i.equals(j)) return false;
+		return true;
+	}
+
 	public void createVal(ArrayList<TopicValue> change){
-		for (TopicValue i : change) listModel.addVal(i);
+
+		for (TopicValue i : change){
+			if (checkFilter(i.name)){
+				filter.add(i.name);
+				listModel.addVal(i);
+			}
+			else System.out.println(i.name);
+		}
 	}
 
 	public void updateVal(ArrayList<TopicValue> change){
