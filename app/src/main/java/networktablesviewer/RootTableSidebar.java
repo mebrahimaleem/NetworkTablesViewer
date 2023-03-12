@@ -131,7 +131,6 @@ public class RootTableSidebar {
 				filter.add(i.name);
 				listModel.addVal(i);
 			}
-			else System.out.println(i.name);
 		}
 	}
 
