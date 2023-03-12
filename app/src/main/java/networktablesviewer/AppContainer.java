@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import networktablesviewer.NetworkAbstraction.*;
 
 import edu.wpi.first.networktables.*;
 
@@ -46,9 +47,33 @@ public class AppContainer{
 	}
 
 	public void blockingLoop(){
+		ArrayList<TopicValue> diff;
+		ArrayList<TopicValue> edit = new ArrayList<TopicValue>();
+		int of;
 		while (true){
-			dtroot = NetworkAbstraction.squashLatest(dtroot, netabs.getLatest());
+			diff = netabs.getLatest();
+
+			edit.clear();
+			of = 0;
+			for (int i = 0; i - of < diff.size(); i++){
+				for (TopicValue j : dtroot){
+					if (diff.get(i - of).name.equals(j.name)){
+						edit.add(diff.get(i - of));
+						diff.remove(i - of);
+						of++;
+						break;
+					}
+				}
+			}
+			
+			sidebar.updateVal(edit);
+
+			sidebar.createVal(diff);
+
+			dtroot = NetworkAbstraction.squashLatest(dtroot, diff);
 			dtroot = netabs.updateExists(dtroot);
+
+			
 		}
 	}
 
