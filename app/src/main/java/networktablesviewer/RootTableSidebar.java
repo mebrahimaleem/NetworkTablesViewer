@@ -6,15 +6,16 @@ import java.awt.event.*;
 import java.util.*;
 import edu.wpi.first.networktables.*;
 import networktablesviewer.NetworkAbstraction.*;
+import networktablesviewer.*;
 
 public class RootTableSidebar {
 	JFrame hWindow;
 	JPanel sidebar;
 	JScrollPane scroll;
-	JLabel title = new JLabel("Topics");
 	SidebarList listModel = new SidebarList();
 	JList list;
 	ArrayList<String> filter = new ArrayList<String>();
+	WindowContentPane content;
 
 	public class SidebarList extends AbstractListModel{
 		ArrayList<TopicValue> topics = new ArrayList<TopicValue>();
@@ -96,17 +97,22 @@ public class RootTableSidebar {
 		}
 	}
 
-	public RootTableSidebar(JFrame window){
+	public RootTableSidebar(JFrame window, WindowContentPane con){
 		hWindow = window;
+		content = con;
 
 		sidebar = new JPanel(new BorderLayout());
 		sidebar.setBackground(new Color(82, 84, 112));
 
-		title.setForeground(Color.black);
-		title.setFont(new Font("", Font.PLAIN , 20));
-		sidebar.add(title, BorderLayout.NORTH);
-
 		list = new JList(listModel);
+		list.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e){
+				JList ls = (JList)e.getSource();
+				if (e.getClickCount() >= 2) content.add(listModel.getTopics().get(ls.locationToIndex(e.getPoint())));
+
+			}
+		});
+
 		sidebar.add(list, BorderLayout.NORTH);
 
 		scroll = new JScrollPane(sidebar);
@@ -125,7 +131,6 @@ public class RootTableSidebar {
 	}
 
 	public void createVal(ArrayList<TopicValue> change){
-
 		for (TopicValue i : change){
 			if (checkFilter(i.name)){
 				filter.add(i.name);

@@ -30,8 +30,8 @@ public class AppContainer{
 			}
 		});
 		
-		sidebar = new RootTableSidebar(hWindow);
 		contentPane = new WindowContentPane(hWindow);
+		sidebar = new RootTableSidebar(hWindow, contentPane);
 
 		sidebarSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebar.getScrollPane(), contentPane.getScrollPane());
 		sidebarSplit.setDividerLocation(250);
