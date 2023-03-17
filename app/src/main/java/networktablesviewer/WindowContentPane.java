@@ -11,6 +11,7 @@ public class WindowContentPane {
 	JFrame hWindow;
 	JScrollPane scroll;
 	JPanel content;
+	ArrayList<DashboardElement> elems = new ArrayList<DashboardElement>();
 
 	public WindowContentPane(JFrame window){
 		hWindow = window;
@@ -21,16 +22,25 @@ public class WindowContentPane {
 		scroll = new JScrollPane(content, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		scroll.setMinimumSize(new Dimension(10, 10));
-		scroll.getHorizontalScrollBar().setUnitIncrement(10);
-		scroll.getVerticalScrollBar().setUnitIncrement(10);
-		scroll.getHorizontalScrollBar().setBlockIncrement(10);
-		scroll.getVerticalScrollBar().setBlockIncrement(10);
+		scroll.getHorizontalScrollBar().setUnitIncrement(30);
+		scroll.getVerticalScrollBar().setUnitIncrement(30);
+		scroll.getHorizontalScrollBar().setBlockIncrement(30);
+		scroll.getVerticalScrollBar().setBlockIncrement(30);
 	}
 
 	public void add(TopicValue topic){
-		content.add(new DashboardElement(topic));
+		elems.add(new DashboardElement(topic));
+		content.add(elems.get(elems.size()-1));
 		content.revalidate();
 		content.repaint();
+	}
+
+	public void updateVal(ArrayList<TopicValue> change){
+		for (TopicValue dif : change){
+			for (DashboardElement elem : elems){
+				if (elem.getName().equals(dif.name)) elem.setTopic(dif);
+			}
+		}
 	}
 
 	public JScrollPane getScrollPane() {return scroll;}

@@ -94,5 +94,6 @@ public class RootTableSidebar {
 
 	public void updateVal(ArrayList<TopicValue> change){
 		for (TopicValue i : change) listModel.editVal(i);
+		content.updateVal(change);
 	}
 }

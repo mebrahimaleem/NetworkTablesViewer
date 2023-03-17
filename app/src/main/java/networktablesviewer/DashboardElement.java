@@ -25,8 +25,14 @@ public class DashboardElement extends JPanel {
 
 		topic = top;
 		
-		title = new JLabel(topic.name, SwingConstants.RIGHT);
-		value = new JLabel(topic.getString(), SwingConstants.RIGHT);
+		title = new JLabel(topic.name, JLabel.CENTER);
+		value = new JLabel(topic.getString(), JLabel.CENTER);
+
+		title.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		value.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+
+		title.setFont(new Font("Serif", Font.PLAIN, 22));
+		value.setFont(new Font("Serif", Font.PLAIN, 22));
 
 		this.setBackground(new Color(118, 158, 222));
 
@@ -39,6 +45,11 @@ public class DashboardElement extends JPanel {
 		this.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e){
+				if (SwingUtilities.isRightMouseButton(e)){
+					System.out.println("R");
+					return;
+				}
+
 				dragOrigin = e.getPoint();
 				if (dragOrigin.getX() > getWidth() - borderSz && dragOrigin.getY() > getHeight() - borderSz) {
 					dragging = true;
@@ -55,7 +66,12 @@ public class DashboardElement extends JPanel {
 
 			@Override
 			public void mouseReleased(MouseEvent e){
-				dragging = false;
+			if (dragging) {
+					dragging = false;
+					title.setSize(getX(), (int)(getY()/3));
+					value.setSize(getX(), (int)(2*getY()/2));
+				}
+
 				if (moving) setLocation(moveTarget);
 				moving = false;
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -79,5 +95,14 @@ public class DashboardElement extends JPanel {
 				}
 			}
 		});
+	}
+
+	public String getName() {
+		return topic.name;
+	}
+
+	public void setTopic(TopicValue top) {
+		topic = top;
+		value.setText(top.getString());
 	}
 }
