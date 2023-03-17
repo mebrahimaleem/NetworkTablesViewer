@@ -47,9 +47,9 @@ public class AppContainer{
 	}
 
 	public void loopCycle(){
-	ArrayList<TopicValue> diff;
-	ArrayList<TopicValue> edit = new ArrayList<TopicValue>();
-	int of;
+		ArrayList<TopicValue> diff;
+		ArrayList<TopicValue> edit = new ArrayList<TopicValue>();
+		int of;
 		diff = netabs.getLatest();
 
 		edit.clear();
