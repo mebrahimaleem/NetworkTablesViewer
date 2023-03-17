@@ -28,13 +28,13 @@ public class DashboardElement extends JPanel {
 		popup = new DashboardPopup(() -> content.remove(this), content);
 		topic = top;
 		
-		title = new JLabel(topic.name, JLabel.CENTER);
-		value = new JLabel(topic.getString(), JLabel.CENTER);
+		title = new JLabel(topic.name.substring(topic.name.lastIndexOf('/')+1), JLabel.CENTER);
+		value = new JLabel("<html>" + topic.getString() + "</html>", JLabel.CENTER);
 
 		title.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		value.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 
-		title.setFont(new Font("Serif", Font.PLAIN, 22));
+		title.setFont(new Font("Helvetica", Font.BOLD, 22));
 		value.setFont(new Font("Serif", Font.PLAIN, 22));
 
 		this.setBackground(new Color(118, 158, 222));
@@ -111,6 +111,6 @@ public class DashboardElement extends JPanel {
 
 	public void setTopic(TopicValue top) {
 		topic = top;
-		value.setText(top.getString());
+		value.setText("<html>" + topic.getString() + "</html>");
 	}
 }
