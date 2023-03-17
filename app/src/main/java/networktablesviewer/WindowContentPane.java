@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import networktablesviewer.NetworkAbstraction.*;
+import networktablesviewer.DashboardPopup.*;
 
 public class WindowContentPane {
 	JFrame hWindow;
@@ -29,7 +30,7 @@ public class WindowContentPane {
 	}
 
 	public void add(TopicValue topic){
-		elems.add(new DashboardElement(topic));
+		elems.add(new DashboardElement(topic, content));
 		content.add(elems.get(elems.size()-1));
 		content.revalidate();
 		content.repaint();

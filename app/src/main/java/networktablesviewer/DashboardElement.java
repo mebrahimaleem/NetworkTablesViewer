@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Scanner;
 import networktablesviewer.NetworkAbstraction.*;
+import networktablesviewer.DashboardPopup.*;
 
 public class DashboardElement extends JPanel {
 	TopicValue topic;
@@ -18,11 +19,13 @@ public class DashboardElement extends JPanel {
 	Point moveTarget = new Point();
 	Point dragOrigin = new Point();
 	final int borderSz = 12;
+	DashboardPopup popup;
 
-	public DashboardElement(TopicValue top){
+	public DashboardElement(TopicValue top, JPanel content){
 		super ();
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+		popup = new DashboardPopup(() -> content.remove(this), content);
 		topic = top;
 		
 		title = new JLabel(topic.name, JLabel.CENTER);
@@ -45,8 +48,8 @@ public class DashboardElement extends JPanel {
 		this.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e){
-				if (SwingUtilities.isRightMouseButton(e)){
-					System.out.println("R");
+				if (e.isPopupTrigger()){
+					popup.show(e.getComponent(), e.getX(), e.getY());
 					return;
 				}
 
@@ -66,11 +69,16 @@ public class DashboardElement extends JPanel {
 
 			@Override
 			public void mouseReleased(MouseEvent e){
-			if (dragging) {
-					dragging = false;
-					title.setSize(getX(), (int)(getY()/3));
-					value.setSize(getX(), (int)(2*getY()/2));
+				if (e.isPopupTrigger()){
+					popup.show(e.getComponent(), e.getX(), e.getY());
+					return;
 				}
+
+				if (dragging) {
+						dragging = false;
+						title.setSize(getX(), (int)(getY()/3));
+						value.setSize(getX(), (int)(2*getY()/2));
+					}
 
 				if (moving) setLocation(moveTarget);
 				moving = false;
