@@ -21,6 +21,43 @@ public class NetworkAbstraction {
 			value = val;
 			name = nm;
 		}
+
+		public String getString() {
+			switch (this.value.getType()){
+				case kBoolean:
+					return String.valueOf(this.value.getBoolean());
+
+				case kDouble:
+					return String.valueOf(this.value.getDouble());
+
+				case kFloat:
+					return String.valueOf(this.value.getFloat());
+
+				case kInteger:
+					return String.valueOf(this.value.getInteger());
+
+				case kString:
+					return String.valueOf(this.value.getString());
+
+				case kBooleanArray:
+					return Arrays.toString(this.value.getBooleanArray());
+
+				case kDoubleArray:
+					return Arrays.toString(this.value.getDoubleArray());
+
+				case kFloatArray:
+					return Arrays.toString(this.value.getFloatArray());
+
+				case kIntegerArray:
+					return Arrays.toString(this.value.getIntegerArray());
+
+				case kStringArray:
+					return Arrays.toString(this.value.getStringArray());
+
+				default:
+					return "<?>";
+			}
+		}
 	}
 
 	public NetworkAbstraction(){

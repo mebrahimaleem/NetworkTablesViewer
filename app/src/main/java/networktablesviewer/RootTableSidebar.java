@@ -46,54 +46,7 @@ public class RootTableSidebar {
 		public String getElementAt(int i){
 			if (i > getSize() - 1) return null;
 
-			String val;
-			switch (topics.get(i).value.getType()){
-				case kBoolean:
-					val = String.valueOf(topics.get(i).value.getBoolean());
-					break;
-
-				case kDouble:
-					val = String.valueOf(topics.get(i).value.getDouble());
-					break;
-
-				case kFloat:
-					val = String.valueOf(topics.get(i).value.getFloat());
-					break;
-
-				case kInteger:
-					val = String.valueOf(topics.get(i).value.getInteger());
-					break;
-
-				case kString:
-					val = String.valueOf(topics.get(i).value.getString());
-					break;
-
-				case kBooleanArray:
-					val = Arrays.toString(topics.get(i).value.getBooleanArray());
-					break;
-
-				case kDoubleArray:
-					val = Arrays.toString(topics.get(i).value.getDoubleArray());
-					break;
-
-				case kFloatArray:
-					val = Arrays.toString(topics.get(i).value.getFloatArray());
-					break;
-
-				case kIntegerArray:
-					val = Arrays.toString(topics.get(i).value.getIntegerArray());
-					break;
-
-				case kStringArray:
-					val = Arrays.toString(topics.get(i).value.getStringArray());
-					break;
-
-				default:
-					val = "<?>";
-					break;
-			}
-
-			return topics.get(i).name + "  :  " + val;
+			return topics.get(i).name + "  :  " + topics.get(i).getString();
 		}
 	}
 
@@ -108,7 +61,7 @@ public class RootTableSidebar {
 		list.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e){
 				JList ls = (JList)e.getSource();
-				if (e.getClickCount() >= 2) content.add(listModel.getTopics().get(ls.locationToIndex(e.getPoint())));
+				if (e.getClickCount() == 2) content.add(listModel.getTopics().get(ls.locationToIndex(e.getPoint())));
 
 			}
 		});

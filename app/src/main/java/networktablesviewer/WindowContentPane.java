@@ -11,13 +11,12 @@ public class WindowContentPane {
 	JFrame hWindow;
 	JScrollPane scroll;
 	JPanel content;
-	ArrayList<DashboardElement> elems = new ArrayList<DashboardElement>();
 
 	public WindowContentPane(JFrame window){
 		hWindow = window;
 
-		content = new JPanel();
-		content.setLayout(new OverlayLayout(content));
+		content = new JPanel(null);
+		content.setPreferredSize(new Dimension(5000, 5000));
 
 		scroll = new JScrollPane(content, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
@@ -29,7 +28,9 @@ public class WindowContentPane {
 	}
 
 	public void add(TopicValue topic){
-		DashboardElement elem = new DashboardElement(topic);
+		content.add(new DashboardElement(topic));
+		content.revalidate();
+		content.repaint();
 	}
 
 	public JScrollPane getScrollPane() {return scroll;}
