@@ -46,39 +46,36 @@ public class AppContainer{
 		hWindow.setVisible(true);
 	}
 
-	public void blockingLoop(){
-		ArrayList<TopicValue> diff;
-		ArrayList<TopicValue> edit = new ArrayList<TopicValue>();
-		int of;
-		while (true){
-			diff = netabs.getLatest();
+	public void loopCycle(){
+	ArrayList<TopicValue> diff;
+	ArrayList<TopicValue> edit = new ArrayList<TopicValue>();
+	int of;
+		diff = netabs.getLatest();
 
-			edit.clear();
-			of = 0;
-			for (int i = 0; i - of < diff.size(); i++){
-				for (TopicValue j : dtroot){
-					if (diff.get(i - of).name.equals(j.name)){
-						edit.add(diff.get(i - of));
-						diff.remove(i - of);
-						of++;
-						break;
-					}
+		edit.clear();
+		of = 0;
+		for (int i = 0; i - of < diff.size(); i++){
+			for (TopicValue j : dtroot){
+				if (diff.get(i - of).name.equals(j.name)){
+					edit.add(diff.get(i - of));
+					diff.remove(i - of);
+					of++;
+					break;
 				}
 			}
-			
-			sidebar.updateVal(edit);
-
-			sidebar.createVal(diff);
-
-			dtroot = NetworkAbstraction.squashLatest(dtroot, diff);
-			dtroot = netabs.updateExists(dtroot);
-
-			
 		}
+		
+		sidebar.updateVal(edit);
+
+		sidebar.createVal(diff);
+
+		dtroot = NetworkAbstraction.squashLatest(dtroot, diff);
+		dtroot = netabs.updateExists(dtroot);
 	}
 
 	public void dispose(){
 		System.out.println("Closing sockets...");
 		netabs.close();
+		System.exit(0);
 	}
 }
