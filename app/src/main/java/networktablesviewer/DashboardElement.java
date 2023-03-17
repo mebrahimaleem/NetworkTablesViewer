@@ -11,6 +11,9 @@ public class DashboardElement extends JPanel {
 	TopicValue topic;
 	JLabel title;
 	JLabel value;
+	boolean dragging = false;
+	Point dragOrigin = new Point();
+	final int borderSz = 12;
 
 	public DashboardElement(TopicValue top){
 		super ();
@@ -27,6 +30,36 @@ public class DashboardElement extends JPanel {
 		this.add(value);
 
 		this.setBounds(0, 0, 100, 100);
-		this.setBorder(BorderFactory.createLineBorder(Color.black, 5));
+		this.setBorder(BorderFactory.createLineBorder(Color.black, borderSz));
+
+		this.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e){
+				dragOrigin = e.getPoint();
+				if (dragOrigin.getX() > getWidth() - borderSz && dragOrigin.getY() > getHeight() - borderSz) {
+					dragging = true;
+					setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
+				}
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e){
+				dragging = false;
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				revalidate();
+				repaint();
+			}
+		});
+
+		this.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent e){
+				if (!dragging) return;
+
+				setSize((int)(getWidth() + (e.getPoint().getX() - dragOrigin.getX())), (int)(getHeight() + (e.getPoint().getY() - dragOrigin.getY())));
+				dragOrigin = e.getPoint();
+			}
+
+		});
 	}
 }
