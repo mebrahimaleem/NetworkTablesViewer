@@ -119,7 +119,6 @@ public class AppContainer{
 				}
 			}
 			
-			System.out.println(edit.size() + diff.size());
 			sidebar.updateVal(edit);
 
 			sidebar.createVal(diff);
