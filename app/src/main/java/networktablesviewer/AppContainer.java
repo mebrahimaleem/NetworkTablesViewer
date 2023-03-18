@@ -9,45 +9,51 @@ import java.util.concurrent.*;
 
 import edu.wpi.first.networktables.*;
 
+/**
+ * App container for holding the underlying structure of the application
+ */
 public class AppContainer{
 	JFrame hWindow; //Window Handle
-	RootTableSidebar sidebar;
-	WindowContentPane contentPane;
-	JSplitPane sidebarSplit;
-	Semaphore netlock = new Semaphore(0, true);
-	Settings sets;
+	RootTableSidebar sidebar; //Sidebar
+	WindowContentPane contentPane; //Dashboard
+	JSplitPane sidebarSplit; //Split between sidebard and dashboard
+	Semaphore netlock = new Semaphore(0, true); //Semaphore for stopping race condition on Topics
+	Settings sets; //Application settings
 
-	NetworkAbstraction netabs = new NetworkAbstraction();
+	NetworkAbstraction netabs = new NetworkAbstraction(); //Network abstraction for updating local Topics
 
-	ArrayList<NetworkAbstraction.TopicValue> dtroot = new ArrayList<NetworkAbstraction.TopicValue>();
+	ArrayList<NetworkAbstraction.TopicValue> dtroot = new ArrayList<NetworkAbstraction.TopicValue>(); //Container for local Topics
 
+	/**
+	 * Creates a JFrame and the underlying structure for the application
+	 * @param settings Settings for the application
+	 */
 	public AppContainer(Settings settings){
-		netlock = new Semaphore(0, true);
 		sets = settings;
 
 		//Create new window
-		hWindow = new JFrame("Network Tables Viewer");
+		hWindow = new JFrame("Network Tables Viewer"); //Create new JFrame
 		hWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		hWindow.addWindowListener(new WindowAdapter() {
+		hWindow.addWindowListener(new WindowAdapter() { //Handle exit to close NT
 			public void windowClosing(WindowEvent e){
 				System.out.println("Normal Termination");
 				dispose();
 			}
 		});
 
-		JMenuBar menuBar = new JMenuBar();
+		JMenuBar menuBar = new JMenuBar(); //Menu bar
 		JMenu fileMenu = new JMenu("File");
 		JMenuItem settingsMenuItem = new JMenuItem("Settings");
 
-		settingsMenuItem.addActionListener(new ActionListener() {
+		settingsMenuItem.addActionListener(new ActionListener() { //Handle click on the settings menu
 			@Override
 			public void actionPerformed(ActionEvent e){
 				SettingsDialog sd = new SettingsDialog(hWindow, settings, () -> changeNetworkServer());
 			}
 		});
 
-		fileMenu.add(settingsMenuItem);
+		fileMenu.add(settingsMenuItem); //Add components
 		menuBar.add(fileMenu);
 
 		hWindow.setJMenuBar(menuBar);
@@ -55,22 +61,27 @@ public class AppContainer{
 		contentPane = new WindowContentPane(hWindow);
 		sidebar = new RootTableSidebar(hWindow, contentPane);
 
-		sidebarSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebar.getScrollPane(), contentPane.getScrollPane());
+		sidebarSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebar.getScrollPane(), contentPane.getScrollPane()); //Split dashboard and sidebar
 		sidebarSplit.setDividerLocation(250);
 		sidebarSplit.setPreferredSize(new Dimension(750, 750));
 		
 		hWindow.getContentPane().add(sidebarSplit);
-
-		if (settings.serverObtain == 0) netabs.connect();
-		else if (settings.serverObtain == 1) netabs.connect(settings.ip);
-		else netabs.connect("10." + 
+ 
+		//Get IP based on user preference
+		if (settings.serverObtain == 0) netabs.connect(); //Use DS
+		else if (settings.serverObtain == 1) netabs.connect(settings.ip); //Use static
+		else netabs.connect("10." + //Use team number
 			Integer.toString(((int)(settings.team / 100))) + "." + 
 			Integer.toString(((int)(settings.team - ((int)(settings.team / 100)) * 100))) + 
 			".1");
 
-		netlock.release();
+		netlock.release(); //Allow other threads to use netabs
 	}
 
+	/**
+	 * Changes the NT server IP
+	 * This function will wait on and acquire the semaphore
+	 */
 	private void changeNetworkServer() {
 		Settings settings = sets;
 		try {
@@ -93,11 +104,20 @@ public class AppContainer{
 		}
 	}
 
+	/**
+	 * Packs and displays the JFrame
+	 */
 	public void displayWindow(){
 		hWindow.pack();
 		hWindow.setVisible(true);
 	}
 
+	/**
+	 * Updates local Topics
+	 * This function should be called periodically
+	 * Calling this function too often will lead to severe application slowdown
+	 * This function will wait on and acquire the semaphore
+	 */
 	public void loopCycle(){
 		try {
 			netlock.acquire();
@@ -134,7 +154,10 @@ public class AppContainer{
 			netlock.release();
 		}
 	}
-
+	
+	/**
+	 * Disposes the JFrame (and its children) and terminates teh JVM
+	 */
 	public void dispose(){
 		try {
 			netlock.acquire();

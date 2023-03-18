@@ -3,10 +3,13 @@ package networktablesviewer;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Holds user settings for the application
+ */
 public class Settings {
-	public int serverObtain;
-	public int team;
-	public String ip;
+	public int serverObtain; //Server obtain method 0 - DS, 1 - static 2 - team number
+	public int team; //Team numbe 
+	public String ip; //Static IP
 
 	public void read() {
 		File f = new File("settings");
