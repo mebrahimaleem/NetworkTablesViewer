@@ -3,11 +3,28 @@ package networktablesviewer;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Holds user settings for the application
+ */
 public class Settings {
+	/**
+	 * How the application should obtain the NT server IP
+	 * 0 - use Driver station
+	 * 1 - use static IP
+	 * 2 - use team number
+	 */
 	public int serverObtain;
+
+	/** The team number stored in settings */
 	public int team;
+	
+	/** The static IP stored in settings */
 	public String ip;
 
+	/**
+	 * Reads and updates settings from the settings file
+	 * This function has undefined behavior when the settings file does not exists or is not in the correct format
+	 */
 	public void read() {
 		File f = new File("settings");
 		Scanner inp = null;
@@ -29,6 +46,10 @@ public class Settings {
 		}
 	}
 
+	/**
+	 * Writes current settings to the settings file
+	 * This function has undefined behavior when the settings file does not exists or is not in the correct format
+	 */
 	public void save() {
 		Writer w = null;
 
