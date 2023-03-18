@@ -11,6 +11,7 @@ import networktablesviewer.NetworkAbstraction.*;
  * Holds information for DashboardElement popups
  */
 public class DashboardPopup extends JPopupMenu {
+	/** Menu Item option to delete DashboardElement */
 	JMenuItem delItem = new JMenuItem("delete"); //Delete menu option
 	
 	/**

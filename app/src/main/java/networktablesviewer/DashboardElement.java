@@ -12,17 +12,38 @@ import networktablesviewer.DashboardPopup.*;
  * This class holds information and acts as a Component for displaying topics on the Dashboard
  */
 public class DashboardElement extends JPanel {
-	TopicValue topic; //Latest Topic
-	JLabel title; //Element title
-	JLabel value; //Element value
-	boolean dragging = false; //Actively resizing?
-	boolean moving = false; //Actively moving?
-	int ymoveOf = 0; //Y offset from click to top left
-	int xmoveOf = 0; //X offset from click to top left
-	Point moveTarget = new Point(); //Desired move position
-	Point dragOrigin = new Point(); //Last drag location
-	final int borderSz = 12; //Border size
-	DashboardPopup popup; //Element popup
+	/** TopicValue to display in DashboardElement */
+	private TopicValue topic;
+
+	/** Title for the DashboardElement */
+	private JLabel title;
+
+	/** Value for the DashboardElement */
+	private JLabel value;
+
+	/** true is actively resizing */
+	private boolean dragging = false;
+
+	/** true if actively moving */
+	private boolean moving = false;
+
+	/** y offset from click to top left of DashboardElement */
+	private int ymoveOf = 0;
+
+	/** x offset from click to top left of DashboardElement */
+	private int xmoveOf = 0;
+
+	/** desired move position */
+	private Point moveTarget = new Point();
+
+	/** desired resize bottom left location */
+	private Point dragOrigin = new Point();
+
+	/** border size of DashboardElement */
+	private final int borderSz = 12;
+
+	/** popup for DashboardElement */
+	private DashboardPopup popup;
 
 	/**
 	 * Creates a JPanel and populates JLabels based on the topic

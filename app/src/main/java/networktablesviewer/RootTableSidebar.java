@@ -24,6 +24,7 @@ public class RootTableSidebar {
 	 * Holds information about the sidebar list
 	 */
 	public class SidebarList extends AbstractListModel{
+		/** List of topics to display in the sidebar list */
 		ArrayList<TopicValue> topics = new ArrayList<TopicValue>();
 
 		/**

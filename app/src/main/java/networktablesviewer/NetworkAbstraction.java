@@ -18,9 +18,17 @@ public class NetworkAbstraction {
 	 * Holds information about a Topic
 	 */
 	public class TopicValue{
-		public NetworkTableValue value; //Topic value
-		public String name; //Topic name
-		public boolean exists = true; //Topic is being published?
+		/** value for the topic */
+		public NetworkTableValue value;
+
+		/** 
+		 * name of the topic
+		 *  this should match with the name of the topic of the NetworkTableValue
+		 */
+		public String name;
+
+		/** true if the topic is being published */
+		public boolean exists = true;
 
 		/**
 		 * Empty constructor for empty topic
