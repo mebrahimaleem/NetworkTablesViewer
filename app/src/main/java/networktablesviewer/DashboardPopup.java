@@ -15,8 +15,10 @@ public class DashboardPopup extends JPopupMenu {
 	}
 
 	public DashboardPopup(RemoveElement remover, JPanel content) {
+		super();
 		this.add(delItem);
 		delItem.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e){
 				remover.remove();
 				content.revalidate();

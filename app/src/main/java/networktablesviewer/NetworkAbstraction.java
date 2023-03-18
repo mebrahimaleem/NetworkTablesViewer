@@ -2,13 +2,14 @@ package networktablesviewer;
 
 import edu.wpi.first.networktables.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class NetworkAbstraction {
 	NetworkTableInstance netinst;
 	int internalState; 
 	MultiSubscriber subs;
 	NetworkTableListenerPoller poll;
-
+	Semaphore lock = new Semaphore(0, true);
 	
 	public class TopicValue{
 		public NetworkTableValue value;
@@ -69,27 +70,65 @@ public class NetworkAbstraction {
 		poll.addListener(subs, EnumSet.of(NetworkTableEvent.Kind.kValueAll));
 
 		internalState = 0;
+		lock.release();
 	}
 
 	public void connect(){
-		netinst.startDSClient();
-		internalState = 1;
+		try {
+			lock.acquire();
+			netinst.startDSClient();
+			internalState = 1;
+		}
+
+		catch (Exception e) {}
+
+		finally {
+			lock.release();
+		}
+	}
+
+	public boolean isOpen() {
+		return internalState == 1;
 	}
 
 	public void connect(String host){
-		netinst.setServer(host, NetworkTableInstance.kDefaultPort4);
-		internalState = 1;
+		try {
+			lock.acquire();
+			netinst.setServer(host, NetworkTableInstance.kDefaultPort4);
+			internalState = 1;
+		}
+
+		catch (Exception e) {}
+
+		finally {
+			lock.release();
+		}
 	}
 
 	public boolean isConnected(){
-		return netinst.isConnected();
+		try {
+			lock.acquire();
+			return netinst.isConnected();
+		}
+
+		catch (Exception e) {}
+
+		finally {
+			lock.release();
+			return false;
+		}
 	}
 
-	public void close() {
-		poll.close();
-		subs.close();
-		netinst.close();
-		internalState = 0;
+	public void closeAndLock() {
+		try {
+			lock.acquire();
+			poll.close();
+			subs.close();
+			netinst.close();
+			internalState = 0;
+		}
+
+		catch (Exception e) {}
 	}
 
 	public int getError(){
@@ -97,39 +136,58 @@ public class NetworkAbstraction {
 	}
 	
 	public ArrayList<TopicValue> getLatest(){
-		if (!isConnected()){
-			internalState = 2;
-			return new ArrayList<TopicValue>();
+		ArrayList<TopicValue> values = new ArrayList<TopicValue>();
+
+		try {
+			lock.acquire();
+			if (!netinst.isConnected()) {
+				internalState = 2;
+				return values;
+			}
+
+			internalState = 0;
+			NetworkTableEvent[] events = poll.readQueue();
+
+			for (NetworkTableEvent event : events){
+				values.add(new TopicValue(event.valueData.value, event.valueData.getTopic().getName()));
+			}
 		}
 
-		internalState = 0;
+		catch (Exception e) {}
 
-		ArrayList<TopicValue> values = new ArrayList<TopicValue>();
-		NetworkTableEvent[] events = poll.readQueue();
-
-		for (NetworkTableEvent event : events){
-			values.add(new TopicValue(event.valueData.value, event.valueData.getTopic().getName()));
+		finally {
+			lock.release();
 		}
 
 		return values;
 	}
 
 	public ArrayList<TopicValue> updateExists(ArrayList<TopicValue> latest){
-		if (!isConnected()){
-			internalState = 2;
-			return latest;
-		}
+		try {
+			lock.acquire();
+			if (!netinst.isConnected()) {
+				internalState = 2;
+				return latest;
+			}
 
-		internalState = 0;
-		TopicValue t;
-		for (int i = 0; i < latest.size(); i++){
-			t = latest.get(i);
-			if (t.exists != netinst.getTopic(t.name).exists()){
-				t.exists = !t.exists;
-				latest.remove(i);
-				latest.add(i, t);
+			internalState = 0;
+			TopicValue t;
+			for (int i = 0; i < latest.size(); i++){
+				t = latest.get(i);
+					if (t.exists != netinst.getTopic(t.name).exists()){
+						t.exists = !t.exists;
+						latest.remove(i);
+						latest.add(i, t);
+					}
 			}
 		}
+
+		catch (Exception e) {}
+
+		finally {
+			lock.release();
+		}
+		
 		return latest;
 	}
 

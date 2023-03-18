@@ -8,10 +8,14 @@ public class App {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run(){
 					System.out.println("NetworkTablesViewer 0.0.0 by Ebrahim Aleem");
-					AppContainer appContainer = new AppContainer();
+					Settings settings = new Settings();
+					settings.read();
+
+					AppContainer appContainer = new AppContainer(settings);
 					appContainer.displayWindow();
 
 					new Timer(500, new ActionListener() {
+						@Override
 						public void actionPerformed(ActionEvent a){
 							try	{
 								appContainer.loopCycle();
